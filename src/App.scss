@@ -1,0 +1,108 @@
+
+$text-color : #61dafb;
+$bg-color: #282c34;
+$border-radius: 5px;
+$border-style: 1px solid $text-color;
+
+.wrapper {
+  background-color: $bg-color;
+  height: 100vh;
+}
+
+.App {
+  width: 760px;
+  height: 100vh;
+  margin: 0 auto;
+  color: $text-color;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 26vmin;
+  pointer-events: none;
+}
+
+.App-header {
+  min-height: 10vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+
+  h3 {
+    font-size: 1.7rem;
+    margin-top: 2px;
+    margin-bottom: 10px;
+  }
+}
+
+.resultBlock {
+  border: $border-style;
+  border-radius: $border-radius;
+  margin-bottom: 30px;
+  overflow-y: hidden;
+  padding: 2%;
+  margin: 2%;
+}
+
+.inputsBlock {
+  min-height: 100px;
+  border: $border-style;
+  border-radius: $border-radius;
+  padding: 2%;
+  margin: 2%;
+
+  .row {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.button {
+  float: left;
+  text-align: center;
+  min-width: 17px;
+  font-size: 1rem;
+  color: $text-color;
+  border: $border-style;
+  border-radius: $border-radius;
+  padding: 15px;
+  cursor: pointer;
+  margin-right: 10px;
+  margin-bottom: 10px;
+
+  &:hover {
+    background-color: white;
+  }
+
+  &:nth-of-type(4) {
+    margin-right: 0;
+  }
+}
+
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .wrapper {
+    .App {
+      width: 100%;
+    }
+  }
+}
+
+@media screen and (max-width: 440px) {
+  html {
+    font-size: 13px !important;
+  }
+}
