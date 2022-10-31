@@ -5,8 +5,8 @@ import ResultBlock from "./components/resultBlock";
 import Button from "./components/button";
 
 export const initCalc = {
-  num1 : undefined,
-  num2 : undefined,
+  num1 : 0,
+  num2 : 0,
   operator: '',
   currentInput: undefined,
   result: undefined,
@@ -124,7 +124,7 @@ function App () {
             setUpCalc = {
               ...setUpCalc,
               num1 : result,
-              num2 : undefined
+              num2 : 0
             };
             setDisplayResult((prevState) => `${prevState}${result}${value}`);
           } else if (num1 && num2) {
@@ -132,7 +132,7 @@ function App () {
             setUpCalc = {
               ...setUpCalc,
               num1 : resultTmp.toString(),
-              num2 : undefined,
+              num2 : 0,
               operator: value,
               inputState: 'num2'
             };
@@ -149,8 +149,8 @@ function App () {
         } else if (value === '=') {
           resultTmp = onCalculate(num1, num2, operator);
           setUpCalc = {
-            num1 : undefined,
-            num2 : undefined,
+            num1 : 0,
+            num2 : 0,
             operator: '',
             result: resultTmp,
             inputState: 'finished',
