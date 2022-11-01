@@ -53,6 +53,7 @@ describe('<App /> Component Testing', () => {
     ['7','7',buttonIndex['7']],
     ['8','8',buttonIndex['8']],
     ['9','9',buttonIndex['9']],
+    ['0','0',buttonIndex['0']],
   ])('should show %s in Result Display when press %s Button', (label, pressed, buttonIndex) => {
     const { getAllByTestId, getByTestId } = wrapper;
     const buttons = getAllByTestId('button');
