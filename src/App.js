@@ -1,128 +1,175 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.scss';
+import ResultBlock from "./components/resultBlock";
+import Button from "./components/button";
 
-let num = {
-  num1 : "",
-  num2 : "",
-  result: ""
+export const initCalc = {
+  num1 : 0,
+  num2 : 0,
+  operator: '',
+  currentInput: undefined,
+  result: undefined,
+  inputState: 'num1'
 };
 
-let setNum = "num1", addedStr = "";
-let opr = "+", oprAdd = true;
+function App () {
+  const [displayResult, setDisplayResult] = useState('0');
+  const [calc, setCalc] = useState(initCalc);
 
-function App (props) {
-  const [result,setResult] = useState("0");
-
-  function clickBtnNum (ev,value) {
-    updateView(value);
-    if (setNum === "num1") {
-      num.num1 += value;
-    } else {
-      num.num2 += value;
+  const onCalculate = (num1, num2, operator) => {
+    let result = 0; 
+    switch (operator) {
+      case '+':
+        result = Number(num1) + Number(num2);
+        break;
+      case '-':
+        result = Number(num1) - Number(num2);
+        break;
+      case 'x':
+        result = Number(num1) * Number(num2);
+        break;
+      case '/':
+        result = Number(num1) / Number(num2);
+        break;
+      default:
+        result = Number(num1) + Number(num2);
     }
-    oprAdd = true;
+    return result;
+  };
+
+  const setDisplay = (display) => {
+    return display || '';
   }
 
-  function clickBtnOpr (ev,value) {
-    if (value !== "=") {
-      if (num.num1 !== "" && num.num2 !== "") {
-        calculate();
-        num.num1 = num.result;
-        num.num2 = "";
-        setNum = "num2";
-        opr = value;
-        if (oprAdd) {
-          updateView("=" + num.result + opr);
-          oprAdd = !oprAdd;
-        }
+  const setOperator = (display, operator) => {
+    const operators = ['+', '-', 'x', '/'];
+    let disp = display;
+    disp = (disp || '').split("");
+    if (disp.length > 0) {
+      const lastChar = disp[disp.length - 1];
+      if (operators.includes(lastChar)) {
+        disp[disp.length - 1] = operator;
       } else {
-        if (num.result !== "") {
-          num.num1 = num.result;
-          num.num2 = "";
-          setNum = "num2";
+        disp.push(operator);
+      }
+    }
+    return disp.join("");
+  }
+
+  const onHandleClick = (value) => {
+    if (isFinite(value)) {
+      setCalc((prevState) => {
+        const { num1, num2, result, inputState } = prevState;
+        let setUpCalc = {}, setNum1 = {}, setNum2 = {};
+        if (result && inputState === 'finished') {
+          setUpCalc = {
+            result: undefined,
+            inputState: 'num1',
+            currentInput: value
+          };
         }
-        if (oprAdd) opr = value;
-        if (setNum === "num1" && num.num1 === "") {
-          num.num1 = "0";
-          if (oprAdd) {
-            updateView(num.num1 + opr);
-            oprAdd = !oprAdd;
-          }
-        } else {
-          if (oprAdd) {
-            updateView(opr);
-            oprAdd = !oprAdd;
-          }
+        switch (inputState) {
+          case 'num1' :
+            setNum1 = {
+              num1: !num1 ? value.toString() : num1.toString()+value.toString(),
+              currentInput: value
+            };
+            setDisplayResult((prevState) => prevState !== '0'
+              ? prevState+value
+              : setDisplay(setNum1['num1'])
+            );
+            break;
+          case 'num2' :
+            setNum2 = {
+              num2: !num2 ? value.toString() : num2.toString()+value.toString(),
+              currentInput: value
+            };
+            setDisplayResult((prevState) => prevState+value);
+            break;
+          default:
+            setNum1 = {
+              num1: !num1 ? value.toString() : num1.toString()+value.toString(),
+              currentInput: value
+            };
+            setDisplayResult((prevState) => prevState !== '0'
+              ? prevState+value
+              : setDisplay(setNum1['num1'])
+            );
         }
-      }
-      if (setNum === "num1") {
-        setNum = "num2";
-      }
+        return {
+          ...prevState,
+          ...setUpCalc,
+          ...setNum1,
+          ...setNum2
+        };
+      });
     } else {
-      if (num.num1 === "") {
-        num.num1 = "0";
-      }
-      if (num.num2 === "") {
-        num.num2 = "0";
-      }
-      calculate();
-      if (num.num1 === "0" && num.num2 === "0") {
-        updateView(num.num1 + opr + num.num2 + "=" + num.result + ", ");
-      } else {
-        updateView("=" + num.result + ", ");
-      }
-      num.num1 = "";
-      num.num2 = "";
-      num.result = "";
-      setNum = "num1";
-      oprAdd = true;
+      setCalc((prevState) => {
+        const {
+          num1,
+          num2,
+          operator,
+          result,
+          inputState
+        } = prevState;
+        let setUpCalc = {}, resultTmp;
+        if (value !== 'C' && value !== '=') {
+          setUpCalc = {
+            operator: value,
+            inputState: 'num2',
+            currentInput: value
+          };
+          if (inputState === 'finished' && result !== undefined) {
+            setUpCalc = {
+              ...setUpCalc,
+              num1 : result,
+              num2 : 0
+            };
+            setDisplayResult((prevState) => `${prevState}${result}${value}`);
+          } else if (num1 && num2) {
+            resultTmp = onCalculate(num1, num2, operator);
+            setUpCalc = {
+              ...setUpCalc,
+              num1 : resultTmp.toString(),
+              num2 : 0,
+              operator: value,
+              inputState: 'num2'
+            };
+            setDisplayResult((prevState) => `${prevState}=${resultTmp}, ${resultTmp}${value}`);
+          } else {
+            setDisplayResult((prevState) => setOperator(prevState, value));
+          }
+        } else if (value === 'C') {
+          setUpCalc = {
+            ...initCalc,
+            currentInput: value
+          };
+          setDisplayResult('0');
+        } else if (value === '=') {
+          resultTmp = onCalculate(num1, num2, operator);
+          setUpCalc = {
+            num1 : 0,
+            num2 : 0,
+            operator: '',
+            result: resultTmp,
+            inputState: 'finished',
+            currentInput: value
+          };
+          setDisplayResult((prevState) => `${prevState}${value}${resultTmp}, `);
+        }
+        return {
+          ...prevState,
+          ...setUpCalc
+        };
+      });
     }
   }
 
-  function clickBtnClear () {
-    num.num1 = "";
-    num.num2 = "";
-    num.result = "";
-    setNum = "num1"
-    addedStr = "";
-    opr = "+";
-    oprAdd = true;
-    setResult("0");
-  }
-
-  function checkNumber(strNum) {
-    return (strNum===""?0:
-      (isNaN(strNum)?0:parseFloat(strNum))
-    );
-  }
-
-  function calculate() {
-    let num1 = checkNumber(num.num1);
-    let num2 = checkNumber(num.num2);
-    switch(opr) {
-      case "+" : num.result = (num1 + num2).toString(); break;
-      case "-" : num.result = (num1 - num2).toString(); break;
-      case "x" : num.result = (num1 * num2).toString(); break;
-      case "/" : num.result = (num1 / num2).toString(); break;
-      default : num.result = (num1 + num2).toString();
-    }
-  }
-
-  useEffect(() => { //cdu
-    if (result === "") {
-      setResult(result + addedStr);
-    }
-  },[result])
-
-  function updateView(strAdd) {
-    if (result === "0") {
-      addedStr = strAdd;
-      setResult("");
-    } else {
-      setResult(result + strAdd);
-    }
-  }
+  const sendedProps = {
+    calc,
+    onHandleClick
+  };
 
   return (
     <div className="wrapper">
@@ -131,33 +178,31 @@ function App (props) {
           <img src={logo} className="App-logo" alt="logo" />
           <h3>React Calculator</h3>
         </header>
-        <div className="resultBlock">
-          <span>{result}</span>
-        </div>
+        <ResultBlock result={displayResult} />
         <div className="inputsBlock">
           <div className="row">
-            <div className="button" onClick={ (ev) => clickBtnNum(ev,1) }>1</div>
-            <div className="button" onClick={ (ev) => clickBtnNum(ev,2) }>2</div>
-            <div className="button" onClick={ (ev) => clickBtnNum(ev,3) }>3</div>
-            <div className="button" onClick={ () => clickBtnClear() }>C</div>
+            <Button {...sendedProps} value={1} />
+            <Button {...sendedProps} value={2} />
+            <Button {...sendedProps} value={3} />
+            <Button {...sendedProps} value={"C"} />
           </div>
           <div className="row">
-            <div className="button" onClick={ (ev) => clickBtnNum(ev,4) }>4</div>
-            <div className="button" onClick={ (ev) => clickBtnNum(ev,5) }>5</div>
-            <div className="button" onClick={ (ev) => clickBtnNum(ev,6) }>6</div>
-            <div className="button" onClick={ (ev) => clickBtnOpr(ev,"+") }>+</div>
+            <Button {...sendedProps} value={4} />
+            <Button {...sendedProps} value={5} />
+            <Button {...sendedProps} value={6} />
+            <Button {...sendedProps} value={"+"} />
           </div>
           <div className="row">
-            <div className="button" onClick={ (ev) => clickBtnNum(ev,7) }>7</div>
-            <div className="button" onClick={ (ev) => clickBtnNum(ev,8) }>8</div>
-            <div className="button" onClick={ (ev) => clickBtnNum(ev,9) }>9</div>
-            <div className="button" onClick={ (ev) => clickBtnOpr(ev,"-") }>-</div>
+            <Button {...sendedProps} value={7} />
+            <Button {...sendedProps} value={8} />
+            <Button {...sendedProps} value={9} />
+            <Button {...sendedProps} value={"-"} />
           </div>
           <div className="row">
-            <div className="button" onClick={ (ev) => clickBtnNum(ev,0) }>0</div>
-            <div className="button" onClick={ (ev) => clickBtnOpr(ev,"x") }>X</div>
-            <div className="button" onClick={ (ev) => clickBtnOpr(ev,"/") }>/</div>
-            <div className="button" onClick={ (ev) => clickBtnOpr(ev,"=") }>=</div>
+            <Button {...sendedProps} value={0} />
+            <Button {...sendedProps} value={"x"} />
+            <Button {...sendedProps} value={"/"} />
+            <Button {...sendedProps} value={"="} />
           </div>
         </div>
       </div>
