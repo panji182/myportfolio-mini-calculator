@@ -14,6 +14,6 @@ const isComponentNotUpdate = (prevProps, nextProps) => {
 const Button = memo(({
   value,
   onHandleClick
-}) => <div className="button" onClick={() => onHandleClick(value)}>{value}</div>, isComponentNotUpdate);
+}) => <div className="button" onClick={() => onHandleClick(value)} data-testid="button">{value}</div>, isComponentNotUpdate);
 
 export default Button;

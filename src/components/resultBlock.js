@@ -3,7 +3,7 @@ import React from 'react';
 const ResultBlock = ({ result }) => {
   return (
     <div className="resultBlock">
-      <span>{result}</span>
+      <span data-testid="displayResult">{result}</span>
     </div>
   )
 };

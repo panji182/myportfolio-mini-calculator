@@ -33,7 +33,6 @@ function App () {
         result = Number(num1) / Number(num2);
         break;
       default:
-        result = Number(num1) + Number(num2);
     }
     return result;
   };
@@ -175,7 +174,7 @@ function App () {
     <div className="wrapper">
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+          <img src={logo} className="App-logo" alt="logo" data-testid="reactLogo" />
           <h3>React Calculator</h3>
         </header>
         <ResultBlock result={displayResult} />
